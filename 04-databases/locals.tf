@@ -4,3 +4,11 @@ locals {
 }
 
 
+locals {
+  dns_records = {
+    mongodb   = module.mongodb.private_ip
+    redis     = module.redis.private_ip
+    mysql     = module.mysql.private_ip
+    rabbitmq  = module.rabbitmq.private_ip
+  }
+}
