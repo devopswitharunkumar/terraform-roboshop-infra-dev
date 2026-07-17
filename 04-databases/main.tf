@@ -216,7 +216,7 @@ resource "aws_route53_record" "records" {
   for_each = local.dns_records
 
   zone_id = data.aws_route53_zone.domain_zone_id.id
-  name    = "${each.key}-${Environment}.${var.zone_name}"
+  name    = "${each.key}-${var.Environment}.${var.zone_name}"
   type    = "A"
   ttl     = 1
 
