@@ -110,7 +110,7 @@ resource "aws_launch_template" "catalogue_launchtemplate" {
 
   instance_initiated_shutdown_behavior = "terminate"
 
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   update_default_version = true
 
 #   placement {
