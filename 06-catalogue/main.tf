@@ -79,7 +79,7 @@ resource "aws_ami_from_instance" "catalogue_ami" {
 
   # Ensures your instance isn't accidentally modified during AMI creation
   tags = {
-    Name = "${var.tags.Component}-Backup-AMI-For-Roboshop-Proj-xAutoScaling"
+    Name = "${var.tags.Component}-Backup-AMI-For-Roboshop-Proj-AutoScaling"
   }
 
   depends_on = [ aws_ec2_instance_state.stop_catalogue ]
