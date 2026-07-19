@@ -21,7 +21,7 @@ resource "aws_lb_listener" "https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"  #in web alb u can get while creating u can see security policy 
-  certificate_arn   = data.aws_ssm_parameter.acm_certificate_arn.arn
+  certificate_arn   = data.aws_ssm_parameter.acm_certificate_arn.value
 
   default_action {
     type = "fixed-response"
@@ -29,7 +29,7 @@ resource "aws_lb_listener" "https" {
      fixed_response {
       content_type = "text/plain"
       message_body = "Hi, This response is from Web ALB using HTTPS"
-      status_code  = "200-299"
+      status_code  = "200"
     }
   }
 }
