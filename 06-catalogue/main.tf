@@ -93,7 +93,7 @@ resource "null_resource" "catalogue_instance_delete" {
   }
 
   provisioner "local-exec" {
-    command = "aws ec2 terminate-instances instance-ids ${module.catalogue.id}"
+    command = "aws ec2 terminate-instances --instance-ids ${module.catalogue.id}"
   }
   depends_on = [ aws_ami_from_instance.catalogue_ami ]
 }
@@ -101,6 +101,7 @@ resource "null_resource" "catalogue_instance_delete" {
 
 #all resources will be created again existing one deleted
 #we have created AMI now, create launch template with AMI
+
 resource "aws_launch_template" "catalogue_launchtemplate" {
   name = "${local.name}-${var.tags.Component}-launchtmpt"
 
@@ -117,7 +118,7 @@ resource "aws_launch_template" "catalogue_launchtemplate" {
 #   }
 
 
-  vpc_security_group_ids = [ data.aws_ssm_parameter.catalogue_sg_id.id ]
+  vpc_security_group_ids = [ data.aws_ssm_parameter.catalogue_sg_id.value ]
 
   tag_specifications {
     resource_type = "instance"
