@@ -27,7 +27,7 @@ module "catalogue" {
   
   create_security_group = false 
   vpc_security_group_ids = [data.aws_ssm_parameter.catalogue_sg_id.value]
-  subnet_id = element(split(",", data.aws_ssm_parameter.private_subnet_id), 0)
+  subnet_id = local.private_subnet_id
   iam_instance_profile = "TerraformRoleForEc2"
 
 
@@ -170,7 +170,7 @@ resource "aws_autoscaling_group" "catalogue_autoscaling" {
 }
 
 
-resource "aws_lb_listener_rule" "catalogue_rule" {
+resource "aws_lb_listener_rule" "catalogue_listner_rule" {
   listener_arn = data.aws_ssm_parameter.app_alb_listner_rule.value
   priority     = 10
 
@@ -181,13 +181,14 @@ resource "aws_lb_listener_rule" "catalogue_rule" {
 
   condition {
     host_header {
-      values = "${var.tags.Component}.app-alb-${var.Environment}.${var.zone_name}"
+      values = ["${var.tags.Component}.app-alb-${var.Environment}.${var.zone_name}"]
     }
   }
 }
 
 
-    resource "aws_autoscaling_policy" "cpu_target_tracking" {
+
+resource "aws_autoscaling_policy" "cpu_target_tracking" {
   name                   = "${local.name}-${var.tags.Component}-autoscalinggrp-tracking-policy"
   autoscaling_group_name = aws_autoscaling_group.catalogue_autoscaling.name
   policy_type            = "TargetTrackingScaling"
