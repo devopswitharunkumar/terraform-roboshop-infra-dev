@@ -452,3 +452,24 @@ resource "aws_security_group_rule" "app_alb_accept_only_vpn_traffic" {
   protocol                 = "tcp"
   security_group_id        = module.app_alb.sg_id
 }
+
+
+
+module "web_alb" {
+  source = "git::https://github.com/devopswitharunkumar/terraform-aws-security-group.git?ref=main"
+  Project_Name = var.Project_Name
+  Environment = var.Environment
+  vpc_id = data.aws_ssm_parameter.vpc_id.value 
+  sg_name = var.web_alb_sg_name
+  sg_description = var.web_alb_sg_description
+  #sg_ingress_rules = var.mongodb_sg_ingress_rules
+}
+
+resource "aws_security_group_rule" "web_alb_accept_from_internet" {
+  cidr_blocks = [ "0.0.0.0/0" ]
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = module.web_alb.sg_id
+}

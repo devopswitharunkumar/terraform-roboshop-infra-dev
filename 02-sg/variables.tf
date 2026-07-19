@@ -181,3 +181,14 @@ variable "app_alb_sg_description" {
   type = string
   default = "App ALB SG"
 }
+
+#web alb related 
+variable "web_alb_sg_name" {
+  type = string
+  default = "web-alb"
+}
+
+variable "web_alb_sg_description" {
+  type = string
+  default = "Web ALB SG"
+}
