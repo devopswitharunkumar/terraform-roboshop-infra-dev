@@ -454,7 +454,6 @@ resource "aws_security_group_rule" "app_alb_accept_only_vpn_traffic" {
 }
 
 
-
 module "web_alb" {
   source = "git::https://github.com/devopswitharunkumar/terraform-aws-security-group.git?ref=main"
   Project_Name = var.Project_Name
@@ -473,3 +472,15 @@ resource "aws_security_group_rule" "web_alb_accept_from_internet" {
   protocol                 = "tcp"
   security_group_id        = module.web_alb.sg_id
 }
+
+
+#App alb should accept connections from web this alb is for internal
+resource "aws_security_group_rule" "app_alb_accept_web_traffic" {
+  source_security_group_id = module.web.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
