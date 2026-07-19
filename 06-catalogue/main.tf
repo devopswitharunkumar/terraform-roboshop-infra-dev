@@ -2,7 +2,7 @@ resource "aws_lb_target_group" "catalogue_targetgroup" {
   name     = "${var.Project_Name}-${var.Environment}-${var.tags.Component}"
   port     = 8080
   protocol = "HTTP"
-  vpc_id   = data.aws_ssm_parameter.vpc_id.id
+  vpc_id   = data.aws_ssm_parameter.vpc_id.value
   deregistration_delay = 60
 
   health_check {
@@ -138,7 +138,7 @@ resource "aws_autoscaling_group" "catalogue_autoscaling" {
   health_check_type         = "ELB"
   desired_capacity          = 2
   
-  vpc_zone_identifier       = split(data.aws_ssm_parameter.private_subnet_id)
+  vpc_zone_identifier       = split(",", data.aws_ssm_parameter.private_subnet_id.value)
   target_group_arns = [ aws_lb_target_group.catalogue_targetgroup.arn ]
   
 
