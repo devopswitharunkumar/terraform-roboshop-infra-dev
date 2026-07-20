@@ -8,3 +8,12 @@ data "aws_route53_zone" "domain_zone_id" {
   private_zone = false
 }
 
+# Look up the ID of the AWS managed CachingOptimized policy
+data "aws_cloudfront_cache_policy" "cache_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
+# Look up the ID of the AWS managed CachingOptimized policy
+data "aws_cloudfront_cache_policy" "no_cache_optimized" {
+  name = "Managed-CachingDisabled"
+}
