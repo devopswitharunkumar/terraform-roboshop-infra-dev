@@ -323,8 +323,17 @@ resource "aws_security_group_rule" "cart_accept_vpn_traffic" {
   security_group_id        = module.cart.sg_id
 }
 
-resource "aws_security_group_rule" "cart_accept_web_traffic" {
-  source_security_group_id = module.web.sg_id
+# resource "aws_security_group_rule" "cart_accept_web_traffic" {
+#   source_security_group_id = module.web.sg_id
+#   type                     = "ingress"
+#   from_port                = 8080
+#   to_port                  = 8080
+#   protocol                 = "tcp"
+#   security_group_id        = module.cart.sg_id
+# }
+
+resource "aws_security_group_rule" "cart_accept_app_alb_traffic" {
+  source_security_group_id = module.app_alb.sg_id
   type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
@@ -360,8 +369,18 @@ resource "aws_security_group_rule" "shipping_accept_vpn_traffic" {
   security_group_id        = module.shipping.sg_id
 }
 
-resource "aws_security_group_rule" "shipping_accept_web_traffic" {
-  source_security_group_id = module.web.sg_id
+#now this is not required because shippingshould accept from app-alb not web instance
+# resource "aws_security_group_rule" "shipping_accept_web_traffic" {
+#   source_security_group_id = module.web.sg_id
+#   type                     = "ingress"
+#   from_port                = 8080
+#   to_port                  = 8080
+#   protocol                 = "tcp"
+#   security_group_id        = module.shipping.sg_id
+# }
+
+resource "aws_security_group_rule" "shipping_accept_app_alb_traffic" {
+  source_security_group_id = module.app_alb.sg_id
   type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
@@ -379,8 +398,18 @@ resource "aws_security_group_rule" "payment_accept_vpn_traffic" {
   security_group_id        = module.payment.sg_id
 }
 
-resource "aws_security_group_rule" "payment_accept_web_traffic" {
-  source_security_group_id = module.web.sg_id
+# resource "aws_security_group_rule" "payment_accept_web_traffic" {
+#   source_security_group_id = module.web.sg_id
+#   type                     = "ingress"
+#   from_port                = 8080
+#   to_port                  = 8080
+#   protocol                 = "tcp"
+#   security_group_id        = module.payment.sg_id
+# }
+
+
+resource "aws_security_group_rule" "payment_accept_app_alb_traffic" {
+  source_security_group_id = module.app_alb.sg_id
   type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
@@ -453,6 +482,60 @@ resource "aws_security_group_rule" "app_alb_accept_only_vpn_traffic" {
   security_group_id        = module.app_alb.sg_id
 }
 
+#App alb should accept connections from web this alb is for internal
+resource "aws_security_group_rule" "app_alb_accept_web_traffic" {
+  source_security_group_id = module.web.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
+resource "aws_security_group_rule" "app_alb_accept_cart_traffic" {
+  source_security_group_id = module.cart.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
+resource "aws_security_group_rule" "app_alb_accept_user_traffic" {
+  source_security_group_id = module.user.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
+resource "aws_security_group_rule" "app_alb_accept_catalogue_traffic" {
+  source_security_group_id = module.catalogue.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
+resource "aws_security_group_rule" "app_alb_accept_payment_traffic" {
+  source_security_group_id = module.payment.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
+
+resource "aws_security_group_rule" "app_alb_accept_shipping_traffic" {
+  source_security_group_id = module.shipping.sg_id
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.app_alb.sg_id
+}
 
 module "web_alb" {
   source = "git::https://github.com/devopswitharunkumar/terraform-aws-security-group.git?ref=main"
@@ -474,13 +557,5 @@ resource "aws_security_group_rule" "web_alb_accept_from_internet" {
 }
 
 
-#App alb should accept connections from web this alb is for internal
-resource "aws_security_group_rule" "app_alb_accept_web_traffic" {
-  source_security_group_id = module.web.sg_id
-  type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
-  protocol                 = "tcp"
-  security_group_id        = module.app_alb.sg_id
-}
+
 

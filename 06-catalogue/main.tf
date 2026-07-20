@@ -1,5 +1,5 @@
 resource "aws_lb_target_group" "catalogue_targetgroup" {
-  name     = "${var.Project_Name}-${var.Environment}-${var.tags.Component}"
+  name     = "${local.name}-${var.tags.Component}"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id.value
@@ -111,6 +111,9 @@ resource "aws_launch_template" "catalogue_launchtemplate" {
   instance_initiated_shutdown_behavior = "terminate"
 
   instance_type = "t3.micro"
+  iam_instance_profile {
+      name = "TerraformRoleForEc2"
+  }
   update_default_version = true
 
 #   placement {
@@ -198,6 +201,6 @@ resource "aws_autoscaling_policy" "cpu_target_tracking" {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = 5.0
+    target_value = 75.0
   }
 }

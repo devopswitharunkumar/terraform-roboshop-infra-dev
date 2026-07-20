@@ -1,7 +1,7 @@
 resource "aws_lb_target_group" "web_targetgroup" {
   name     = "${var.Project_Name}-${var.Environment}-${var.tags.Component}"
   port     = 80
-  protocol = "HTTPS"
+  protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id.value
   deregistration_delay = 60
 
@@ -103,13 +103,14 @@ resource "null_resource" "web_instance_delete" {
 #we have created AMI now, create launch template with AMI
 resource "aws_launch_template" "web_launchtemplate" {
   name = "${local.name}-${var.tags.Component}-launchtmpt"
-
-
   image_id = aws_ami_from_instance.web_ami.id
 
   instance_initiated_shutdown_behavior = "terminate"
 
   instance_type = "t3.micro"
+  iam_instance_profile {
+      name = "TerraformRoleForEc2"
+  }
   update_default_version = true
 
 #   placement {
