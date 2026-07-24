@@ -19,6 +19,9 @@ pipeline {
         timeout(time:1, unit:'HOURS')
         disableConcurrentBuilds()
     }
+    parameters {
+        choice (name: 'action', choices: ['Apply', 'Destroy'])
+    }
     stages {
         stage('Install Terraform') {
             steps {
@@ -50,6 +53,11 @@ pipeline {
             }
         }
         stage('Apply Stage') {
+            when {
+                expression {
+                    params.action == 'Apply'
+                }
+            }
             input {
                 message "Do You Want to Continue ?"
                 ok "proceed"
@@ -62,6 +70,11 @@ pipeline {
             }
         }
         stage('Destroy Stage') {
+            when {
+                expression {
+                    params.action == 'Destroy'
+                }
+            }
             input {
                 message "Do You Want to Continue ?"
                 ok "proceed"
