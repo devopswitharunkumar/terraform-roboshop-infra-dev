@@ -1,3 +1,10 @@
+//login to Agent-1 here wwe are using agent ec2 so login to that manually through super putty 
+//do sudo visudo or sudo cd /etc/sudoers file 
+// add jenkins ALL=(ALL) NOPASSWD: ALL   after %wheel 
+// this is adding becasue it will not run as root it will run as jenkins user so adding like this 
+//do aws configure command not in root user do it in normal user in agent-1 where ever agent u do all this
+//then only pipeline will execute
+
 pipeline {
     agent {
         node {
@@ -13,6 +20,19 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
+        stage('Install Terraform') {
+            steps {
+                sh '''
+                sudo yum install -y yum-utils
+
+                sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+                sudo yum install -y terraform
+
+                terraform version
+                '''
+            }
+        }
         stage('Init Stage') {
             steps {
                 sh """
@@ -38,6 +58,18 @@ pipeline {
             sh """
                 cd "${Module_No}"
                 terraform apply -auto-approve
+            """
+            }
+        }
+        stage('Destroy Stage') {
+            input {
+                message "Do You Want to Continue ?"
+                ok "proceed"
+            }
+            steps {
+            sh """
+                cd "${Module_No}"
+                terraform destroy -auto-approve
             """
             }
         }
