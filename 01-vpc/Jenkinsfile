@@ -1,0 +1,52 @@
+pipeline {
+    agent Agent-1
+    environment {
+        Module_No = "01-vpc"
+    }
+    options {
+        ansiColor('xterm')
+        timeout(time:1, unit:'HOURS')
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Init Stage') {
+            steps {
+                sh """
+                    cd "${Module_No}"
+                    terraform init -reconfigure
+                """
+            } 
+        }
+        stage('Plan Stage') {
+            steps {
+                sh """
+                    cd "${Module_No}"
+                    terraform plan
+                """
+            }
+        }
+        stage('Apply Stage') {
+            input {
+                message "Do You Want to Continue ?"
+                ok "proceed"
+            }
+            steps {
+            sh """
+                cd "${Module_No}"
+                terraform apply -auto-approve
+            """
+            }
+        }
+    }
+    post {
+        always {
+            echo "Terraform modules"
+        }
+        success {
+            echo "Terraform infra Deployment Successfull"
+        }
+        failure {
+            echo "Terraform infra Deployment Failed"
+        }
+    }
+}
