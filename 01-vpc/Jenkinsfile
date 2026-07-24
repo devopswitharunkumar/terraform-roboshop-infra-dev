@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'Agent-1'
+        }
+    }
     environment {
         Module_No = "01-vpc"
     }
