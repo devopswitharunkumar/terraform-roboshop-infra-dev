@@ -119,6 +119,7 @@ pipeline {
     post {
         always {
             echo "Terraform modules"
+            deleteDir()
         }
         success {
             echo "Terraform infra Deployment Successfull"
