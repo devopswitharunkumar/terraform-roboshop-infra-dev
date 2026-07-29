@@ -17,9 +17,9 @@ pipeline {
         timeout(time:1, unit:'HOURS')
         disableConcurrentBuilds()
     }
-    parameters {
-        choice (name: 'action', choices: ['Apply', 'Destroy'])
-    }
+    // parameters {
+    //     choice (name: 'action', choices: ['Apply', 'Destroy'])
+    // }
     stages {
         stage('Install Terraform') {
             when {
