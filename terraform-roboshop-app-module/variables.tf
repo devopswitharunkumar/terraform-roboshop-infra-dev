@@ -43,3 +43,7 @@ variable "app_alb_listner_arn" {
 variable "alb_listner_rule_priority" {
   
 }
+
+variable "app_version" {
+  
+}
