@@ -17,9 +17,9 @@ pipeline {
         timeout(time:1, unit:'HOURS')
         disableConcurrentBuilds()
     }
-    // parameters {
-    //     choice (name: 'action', choices: ['Apply', 'Destroy'])
-    // }
+    parameters {
+        choice (name: 'action', choices: ['Apply', 'Destroy'])
+    }
     stages {
         stage('Install Terraform') {
             when {
@@ -47,6 +47,11 @@ pipeline {
             }
         }
         stage('VPC') {
+            when {
+                expression {
+                    params.action == 'Apply'
+                }
+            }
             steps {
                 sh """
                     cd 01-vpc/
@@ -56,6 +61,11 @@ pipeline {
             } 
         }
         stage('SG') {
+            when {
+                expression {
+                    params.action == 'Apply'
+                }
+            }
             steps {
                 sh """
                     cd 02-sg/
@@ -65,6 +75,11 @@ pipeline {
             } 
         }
         stage('VPN') {
+            when {
+                expression {
+                    params.action == 'Apply'
+                }
+            }
             steps {
                 sh """
                     cd 03-vpn/
@@ -75,6 +90,11 @@ pipeline {
         }
 //all stages are running in sequential process so App alb doesnt have dependency n databases s we used parallel stages
         stage('Databases And APP ALB') {
+            when {
+                expression {
+                    params.action == 'Apply'
+                }
+            }
             parallel {
                 stage('Databases') {
                     steps {
@@ -115,6 +135,64 @@ pipeline {
         //     """
         //     }
         // }
+
+        //all stages are running in sequential process so App alb doesnt have dependency n databases s we used parallel stages
+        stage('Databases And APP ALB destroy') {
+            when {
+                expression { params.action == 'Destroy' }
+            }
+            parallel {
+                stage('Application Load Balancer destroy') {
+                    steps {
+                        sh '''
+                            cd 05-app-alb
+                            terraform destroy -auto-approve
+                        '''
+                    }
+                }
+                stage('Databases destroy') {
+                    steps {
+                        sh '''
+                            cd 04-databases
+                            terraform destroy -auto-approve
+                        '''
+                    }
+                }
+            }
+        }
+        stage('VPN destroy') {
+            when {
+                expression { params.action == 'Destroy' }
+            }
+            steps {
+                sh '''
+                    cd 03-vpn
+                    terraform destroy -auto-approve
+                '''
+            }
+        }
+        stage('SG destroy') {
+            when {
+                expression { params.action == 'Destroy' }
+            }
+            steps {
+                sh '''
+                    cd 02-sg
+                    terraform destroy -auto-approve
+                '''
+            }
+        }
+        stage('VPC destroy') {
+            when {
+                expression { params.action == 'Destroy' }
+            }
+            steps {
+                sh '''
+                    cd 01-vpc
+                    terraform destroy -auto-approve
+                '''
+            }
+        }
     }
     post {
         always {
