@@ -25,26 +25,24 @@ pipeline {
             when {
                 expression {
                     return sh (
-                        script : 'commanf -v terraform >/dev/null 2&1',
+                        script : 'command -v terraform >/dev/null 2>&1',
                         returnStatus: true
-                        echo "Terraform is already installed."
-                    ) ! = 0
-                    
+                    ) != 0
                 }
             }
             steps {
                 sh '''
-                echo "Terraform is not installed. Installing..."
+                    echo "Terraform is not installed. Installing..."
 
-                sudo yum install -y yum-utils
+                    sudo yum install -y yum-utils
 
-                sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+                    sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
-                sudo yum install -y terraform
+                    sudo yum install -y terraform
 
-                echo "Terraform Installed Successfully"
+                    echo "Terraform Installed Successfully"
 
-                terraform version
+                    terraform version
                 '''
             }
         }
